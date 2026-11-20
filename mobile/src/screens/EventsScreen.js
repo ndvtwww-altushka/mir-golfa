@@ -5,13 +5,13 @@ import { Button, Card, Chip, Empty, Pill, T } from '../components';
 import { countdown, dateRangeWithYear, isPast, monthShort, monthTitle, statusLabel } from '../format';
 
 const PERIODS = [
-  { key: 'upcoming', label: 'Скоро' },
+  { key: 'upcoming', label: 'Ближайшие' },
   { key: 'all', label: 'Все' },
   { key: 'archive', label: 'Архив' },
 ];
 
 function levelTone(level) {
-  if (/Всероссийск/i.test(level || '')) return 'green';
+  if (/Всероссийск/i.test(level || '')) return 'ink';
   if (/Международн/i.test(level || '')) return 'blue';
   if (/Региональн/i.test(level || '')) return 'soft';
   return 'muted';
@@ -21,27 +21,28 @@ function EventCard({ event, saved, onPress, onToggleSave }) {
   const when = countdown(event);
   const past = isPast(event);
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [st.card, past && { opacity: 0.72 }, pressed && { opacity: 0.9 }]}>
+    <Pressable onPress={onPress} style={({ pressed }) => [st.card, past && { opacity: 0.6 }, pressed && { opacity: 0.85 }]}>
       <View style={st.cardRow}>
-        <View style={[st.dateBox, past && { backgroundColor: '#E8EDE3' }]}>
+        <View style={[st.dateBox, past && { backgroundColor: C.bg2 }]}>
           <Text style={[st.dateDay, past && { color: C.muted }]}>{String(event.start_date).slice(8, 10)}</Text>
           <Text style={[st.dateMonth, past && { color: C.muted }]}>{monthShort(event.start_date)}</Text>
         </View>
         <View style={{ flex: 1 }}>
           <View style={st.badges}>
-            <Pill tone={levelTone(event.level)}>{event.level || 'уровень уточняется'}</Pill>
+            <Pill tone={levelTone(event.level)}>{event.level || 'уточняется'}</Pill>
             <Pill tone={when.tone}>{when.text}</Pill>
           </View>
           <Text style={st.title} numberOfLines={2}>{event.name}</Text>
-          <Text style={st.meta} numberOfLines={1}>⌖ {event.venue || event.region || 'Место уточняется'}</Text>
+          <Text style={st.meta} numberOfLines={1}>{event.venue || event.region || 'Место уточняется'}</Text>
         </View>
         <Pressable onPress={onToggleSave} hitSlop={12} style={st.star}>
-          <Text style={{ fontSize: 20, color: saved ? C.gold : '#C3CCBF' }}>{saved ? '★' : '☆'}</Text>
+          <Text style={{ fontSize: 18, color: saved ? C.gold : C.lineStrong, fontWeight: '700' }}>{saved ? '★' : '☆'}</Text>
         </Pressable>
       </View>
       {!!event.entry_fee_text && <Text style={st.fee}>{event.entry_fee_text}</Text>}
+      <View style={st.divider} />
       <Text style={st.statusLine} numberOfLines={1}>
-        {dateRangeWithYear(event.start_date, event.end_date)} · {statusLabel(event.display_status)}
+        {dateRangeWithYear(event.start_date, event.end_date)}  ·  {statusLabel(event.display_status)}
       </Text>
     </Pressable>
   );
@@ -108,26 +109,17 @@ export default function EventsScreen({
     <ScrollView
       contentContainerStyle={st.content}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.green} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.ink} />}
     >
       <View style={st.hero}>
-        <View style={st.heroTop}>
-          <Text style={st.heroKicker}>СЕЗОН {meta.season}</Text>
-          <View style={st.liveDotRow}>
-            <View style={[st.liveDot, { backgroundColor: mode === 'network' ? C.lime : '#9CB08F' }]} />
-            <Text style={st.liveText}>{mode === 'network' ? 'онлайн' : 'офлайн-каталог'}</Text>
-          </View>
-        </View>
+        <Text style={st.heroKicker}>СЕЗОН {meta.season}</Text>
         <Text style={st.heroTitle}>
           {upcomingCount > 0
             ? `${upcomingCount} ${plural(upcomingCount, ['турнир', 'турнира', 'турниров'])} впереди`
-            : 'Сезон закрыт — открыт архив'}
-        </Text>
-        <Text style={st.heroBody}>
-          Официальный календарь АГР, клубы и результаты в одном месте. У каждого факта есть ссылка на источник.
+            : 'Сезон закрыт'}
         </Text>
         <View style={st.heroStats}>
-          <View style={st.heroStat}><Text style={st.heroStatValue}>{events.length}</Text><Text style={st.heroStatLabel}>событий в базе</Text></View>
+          <View style={st.heroStat}><Text style={st.heroStatValue}>{events.length}</Text><Text style={st.heroStatLabel}>событий</Text></View>
           <View style={st.heroDivider} />
           <View style={st.heroStat}><Text style={st.heroStatValue}>{meta.sources.filter((s) => s.enabled !== false).length}</Text><Text style={st.heroStatLabel}>источников</Text></View>
           <View style={st.heroDivider} />
@@ -140,8 +132,8 @@ export default function EventsScreen({
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Турнир, клуб, город…"
-          placeholderTextColor="#9AA69E"
+          placeholder="Найти турнир, клуб, город"
+          placeholderTextColor="#C0C5BF"
           style={st.search}
           returnKeyType="search"
         />
@@ -152,7 +144,7 @@ export default function EventsScreen({
         {PERIODS.map((item) => (
           <Chip key={item.key} title={item.label} active={period === item.key} onPress={() => setPeriod(item.key)} />
         ))}
-        <Chip title={savedOnly ? '★ Избранное' : '☆ Избранное'} active={savedOnly} onPress={() => setSavedOnly((value) => !value)} tone="lime" />
+        <Chip title={savedOnly ? '★ Избранное' : '☆ Избранное'} active={savedOnly} onPress={() => setSavedOnly((value) => !value)} />
       </ScrollView>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.chips}>
@@ -166,11 +158,11 @@ export default function EventsScreen({
 
       {filtered.length === 0 ? (
         <Empty
-          title={savedOnly ? 'В избранном пока пусто' : period === 'upcoming' ? 'Ближайших турниров нет' : 'Ничего не нашлось'}
+          title={savedOnly ? 'В избранном пусто' : period === 'upcoming' ? 'Ближайших турниров нет' : 'Ничего не нашлось'}
           text={savedOnly
             ? 'Отмечайте турниры звёздочкой — они соберутся здесь.'
             : period === 'upcoming'
-              ? 'Официальный календарь сезона закончился. Новые даты появятся после публикации АГР — обновите каталог позже.'
+              ? 'Календарь сезона закончился. Новые даты появятся после публикации АГР.'
               : 'Попробуйте изменить фильтры или очистить поиск.'}
           action={period === 'upcoming' ? 'Открыть архив' : 'Сбросить фильтры'}
           onAction={() => {
@@ -180,7 +172,7 @@ export default function EventsScreen({
         />
       ) : (
         groups.map((group) => (
-          <View key={group.key} style={{ marginTop: 18 }}>
+          <View key={group.key} style={{ marginTop: 22 }}>
             <View style={st.groupHead}>
               <Text style={st.groupTitle}>{monthTitle(`${group.key}-01`)}</Text>
               <Text style={st.groupCount}>{group.items.length}</Text>
@@ -199,8 +191,7 @@ export default function EventsScreen({
       )}
 
       <Text style={st.footer}>
-        Данные: официальный календарь АГР и положения организаторов. Прошедшие даты не означают, что турнир
-        завершён — статус и протокол подтверждаются отдельно.
+        Данные: официальный календарь АГР и положения организаторов. Прошедшие даты не означают завершение турнира.
       </Text>
     </ScrollView>
   );
@@ -208,37 +199,33 @@ export default function EventsScreen({
 
 const st = StyleSheet.create({
   content: { paddingHorizontal: S.pad, paddingBottom: 28 },
-  hero: { backgroundColor: C.green, borderRadius: 26, padding: 20, marginTop: 10, marginBottom: 16 },
-  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  heroKicker: { color: C.lime, fontSize: 10, fontWeight: '900', letterSpacing: 1.6 },
-  liveDotRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  liveDot: { width: 7, height: 7, borderRadius: 4 },
-  liveText: { color: '#BFD3C4', fontSize: 10, fontWeight: '700' },
-  heroTitle: { color: C.white, fontSize: 27, lineHeight: 31, fontWeight: '900', marginTop: 12, letterSpacing: -0.5 },
-  heroBody: { color: '#DCE9DE', fontSize: 13, lineHeight: 19, marginTop: 8 },
-  heroStats: { flexDirection: 'row', alignItems: 'center', marginTop: 18, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 16, paddingVertical: 12 },
+  hero: { marginTop: 16, marginBottom: 18 },
+  heroKicker: { color: C.muted, fontSize: 10, fontWeight: '800', letterSpacing: 2 },
+  heroTitle: { color: C.ink, fontSize: 30, lineHeight: 36, fontWeight: '800', marginTop: 6, letterSpacing: -0.8 },
+  heroStats: { flexDirection: 'row', alignItems: 'center', marginTop: 18, backgroundColor: C.green, borderRadius: S.radius, paddingVertical: 14 },
   heroStat: { flex: 1, alignItems: 'center' },
-  heroStatValue: { color: C.white, fontSize: 19, fontWeight: '900' },
-  heroStatLabel: { color: '#BFD3C4', fontSize: 10, marginTop: 2 },
-  heroDivider: { width: 1, height: 26, backgroundColor: 'rgba(255,255,255,0.14)' },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: 16, paddingHorizontal: 12, marginBottom: 10 },
-  searchIcon: { fontSize: 18, color: C.muted, marginRight: 8, marginTop: -2 },
-  search: { flex: 1, paddingVertical: 13, fontSize: 14, color: C.ink },
+  heroStatValue: { color: C.white, fontSize: 18, fontWeight: '800' },
+  heroStatLabel: { color: '#9DB5A8', fontSize: 9, marginTop: 2, letterSpacing: 0.6, textTransform: 'uppercase' },
+  heroDivider: { width: 1, height: 26, backgroundColor: 'rgba(255,255,255,0.15)' },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bg2, borderWidth: 1, borderColor: C.line, borderRadius: S.radiusSm, paddingHorizontal: 14, marginBottom: 10 },
+  searchIcon: { fontSize: 18, color: C.muted, marginRight: 10, marginTop: -2 },
+  search: { flex: 1, paddingVertical: 14, fontSize: 15, color: C.ink },
   clear: { color: C.muted, fontSize: 14, padding: 4 },
-  chips: { gap: 8, paddingVertical: 4, paddingRight: 8 },
-  groupHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  groupTitle: { fontSize: 12, fontWeight: '900', letterSpacing: 1.2, color: C.muted, textTransform: 'uppercase' },
-  groupCount: { fontSize: 11, fontWeight: '800', color: C.green, backgroundColor: C.limeSoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
-  card: { backgroundColor: C.card, borderRadius: 20, borderWidth: 1, borderColor: C.line, padding: 13, marginBottom: 10, ...S.shadow },
-  cardRow: { flexDirection: 'row', gap: 12 },
-  dateBox: { width: 48, height: 54, borderRadius: 14, backgroundColor: C.green, alignItems: 'center', justifyContent: 'center' },
-  dateDay: { color: C.white, fontSize: 19, fontWeight: '900', lineHeight: 22 },
-  dateMonth: { color: C.lime, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
-  badges: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 5 },
-  title: { fontSize: 15, lineHeight: 20, fontWeight: '800', color: C.ink },
-  meta: { fontSize: 12, color: C.muted, marginTop: 3 },
-  star: { paddingLeft: 4, paddingTop: 2 },
-  fee: { fontSize: 12, fontWeight: '700', color: C.ink2, marginTop: 8 },
-  statusLine: { fontSize: 11, color: C.muted, marginTop: 8 },
-  footer: { fontSize: 10, lineHeight: 15, color: C.muted, textAlign: 'center', marginTop: 22 },
+  chips: { gap: 8, paddingVertical: 5, paddingRight: 12 },
+  groupHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+  groupTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 1, color: C.muted, textTransform: 'uppercase' },
+  groupCount: { fontSize: 11, fontWeight: '700', color: C.muted },
+  card: { backgroundColor: C.card, borderRadius: S.radius, borderWidth: 1, borderColor: C.line, padding: 15, marginBottom: 10 },
+  cardRow: { flexDirection: 'row', gap: 13 },
+  dateBox: { width: 50, height: 56, borderRadius: S.radiusSm, backgroundColor: C.green, alignItems: 'center', justifyContent: 'center' },
+  dateDay: { color: C.white, fontSize: 20, fontWeight: '800', lineHeight: 23 },
+  dateMonth: { color: '#9DB5A8', fontSize: 9, fontWeight: '800', letterSpacing: 1, marginTop: 1 },
+  badges: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 6 },
+  title: { fontSize: 15, lineHeight: 20, fontWeight: '700', color: C.ink },
+  meta: { fontSize: 12, color: C.muted, marginTop: 4 },
+  star: { paddingLeft: 6, paddingTop: 2 },
+  fee: { fontSize: 12, fontWeight: '600', color: C.ink2, marginTop: 8 },
+  divider: { height: 1, backgroundColor: C.line, marginTop: 12, marginBottom: 8 },
+  statusLine: { fontSize: 11, color: C.muted, letterSpacing: 0.1 },
+  footer: { fontSize: 10, lineHeight: 15, color: C.muted, textAlign: 'center', marginTop: 26 },
 });

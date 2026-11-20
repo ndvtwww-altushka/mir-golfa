@@ -1,9 +1,9 @@
 import React from 'react';
 import { Linking, Pressable, Share, StyleSheet, Text, View } from 'react-native';
-import { C } from './theme';
+import { C, S } from './theme';
 import { Button, Card, Pill, Sheet, T } from './components';
 import {
-  AUTHORITY_LABEL, COLLECTION_LABEL, REGISTRATION_LABEL, countdown, dateRangeWithYear,
+  AUTHORITY_LABEL, REGISTRATION_LABEL, countdown, dateRangeWithYear,
   freshnessLabel, statusLabel, statusTone,
 } from './format';
 
@@ -25,7 +25,7 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
   return (
     <Sheet visible onClose={onClose} title={event.name}>
       <View style={st.badges}>
-        <Pill tone="green">{event.sport === 'mini_golf' ? 'Мини-гольф' : 'Гольф'}</Pill>
+        <Pill tone={event.sport === 'mini_golf' ? 'blue' : 'ink'}>{event.sport === 'mini_golf' ? 'мини-гольф' : 'гольф'}</Pill>
         <Pill tone={statusTone(event.display_status)}>{statusLabel(event.display_status)}</Pill>
         <Pill tone={when.tone}>{when.text}</Pill>
       </View>
@@ -40,10 +40,10 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
         <Button title="Поделиться" variant="ghost" onPress={share} style={{ flexGrow: 1 }} />
       </View>
       {!!event.venue && (
-        <Button title="Открыть на карте ↗" variant="ghost" onPress={() => openUrl(mapUrl(event))} />
+        <Button title="Открыть на карте" variant="ghost" onPress={() => openUrl(mapUrl(event))} style={{ marginTop: 8 }} />
       )}
 
-      <Card style={{ marginTop: 14 }}>
+      <Card style={{ marginTop: 16 }}>
         <Text style={[T.h3]}>Детали</Text>
         <Row label="Уровень" value={event.level || 'уточняется'} />
         <Row label="Организатор" value={event.organizer || 'уточняется'} />
@@ -71,14 +71,13 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
         <Text style={[T.muted, { marginTop: 6 }]}>
           {event.source_name || 'Первоисточник'}
           {event.source_authority ? ` · ${AUTHORITY_LABEL[event.source_authority] || event.source_authority}` : ''}
-          {event.source_collection_mode ? ` · ${COLLECTION_LABEL[event.source_collection_mode] || ''}` : ''}
         </Text>
         {!!event.source_excerpt && <Text style={st.excerpt}>«{event.source_excerpt}»</Text>}
         <Text style={[T.tiny, { marginTop: 8 }]}>
           Проверка: {event.last_checked_at ? String(event.last_checked_at).slice(0, 10) : 'нет отметки'} · {freshnessLabel(event.freshness_state)}
         </Text>
         {!!event.source_url && (
-          <Text style={st.link} onPress={() => openUrl(event.source_url)}>Открыть первоисточник ↗</Text>
+          <Text style={st.link} onPress={() => openUrl(event.source_url)}>Открыть первоисточник</Text>
         )}
       </Card>
 
@@ -108,7 +107,7 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
       <Pressable
         onPress={() => openUrl(`mailto:events@mirgolfa.ru?subject=${encodeURIComponent(`Исправление: ${event.name}`)}&body=${encodeURIComponent(`Событие: ${event.name}\n${event.id}\n\nЧто не так:\n\nСсылка на подтверждение:\n`)}`)}
       >
-        <Text style={st.correction}>Нашли ошибку? Напишите нам ↗</Text>
+        <Text style={st.correction}>Нашли ошибку? Напишите нам</Text>
       </Pressable>
     </Sheet>
   );
@@ -125,12 +124,12 @@ function Row({ label, value }) {
 
 const st = StyleSheet.create({
   badges: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 12 },
-  date: { fontSize: 19, fontWeight: '900', color: C.green },
-  actionRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingVertical: 7, borderTopWidth: 1, borderTopColor: '#F0F3EC' },
+  date: { fontSize: 19, fontWeight: '800', color: C.green, letterSpacing: -0.2 },
+  actionRow: { flexDirection: 'row', gap: 8, marginTop: 16 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingVertical: 8, borderTopWidth: 1, borderTopColor: C.line },
   rowLabel: { fontSize: 12, color: C.muted, flex: 1 },
-  rowValue: { fontSize: 12, color: C.ink, fontWeight: '700', flex: 1.4, textAlign: 'right' },
+  rowValue: { fontSize: 12, color: C.ink, fontWeight: '600', flex: 1.4, textAlign: 'right' },
   excerpt: { fontSize: 12, lineHeight: 18, color: C.ink2, marginTop: 10, fontStyle: 'italic' },
-  link: { color: C.green, fontWeight: '800', fontSize: 12, marginTop: 10 },
-  correction: { color: C.green, fontWeight: '800', fontSize: 12, textAlign: 'center', marginTop: 18, marginBottom: 8 },
+  link: { color: C.green, fontWeight: '700', fontSize: 12, marginTop: 10 },
+  correction: { color: C.green, fontWeight: '700', fontSize: 12, textAlign: 'center', marginTop: 18, marginBottom: 8 },
 });

@@ -1,34 +1,50 @@
-// Дизайн-система «Мир Гольфа»: цвета, отступы, тени.
+// Дизайн-система «Мир Гольфа» v2.2 — «Имба»
+// Строгая монохромная база + глубокий изумруд + золото статусов.
+
 export const C = {
-  bg: '#F2F5EE',
+  // База
+  bg: '#FFFFFF',
+  bg2: '#F7F7F5',          // Тёплый светло-серый для подложек
   card: '#FFFFFF',
-  ink: '#12251C',
-  ink2: '#3B4C44',
-  muted: '#6E7C73',
-  green: '#0F3D2E',
-  green2: '#1A5A42',
-  lime: '#C9F06B',
-  limeSoft: '#EAF7C6',
-  limeInk: '#14301F',
-  line: '#E2E8DB',
-  sand: '#F6F1E4',
-  gold: '#B98A2F',
-  red: '#B3452F',
-  blue: '#2C5B86',
+  ink: '#0A0F0D',          // Почти чёрный
+  ink2: '#3C4642',
+  muted: '#8A938E',
+  line: '#E8EAE7',
+  lineStrong: '#D5D9D5',
+
+  // Акцент — глубокий изумруд (газон)
+  green: '#0E4633',
+  green2: '#155C43',
+  greenSoft: '#EDF3EF',
+
+  // Золото — для избранного и рейтингов
+  gold: '#A8842C',
+  goldSoft: '#F7F1E1',
+
+  // Статусы
+  lime: '#C8E64A',
+  limeInk: '#1C2A0C',
+  red: '#B23B2E',
+  redSoft: '#F9ECEA',
+  blue: '#2D5A87',
+  blueSoft: '#EBF1F7',
+
   white: '#FFFFFF',
-  overlay: 'rgba(15,61,46,0.45)',
+  overlay: 'rgba(10,15,13,0.5)',
 };
 
 export const S = {
-  pad: 18,
-  radius: 22,
-  radiusSm: 14,
+  pad: 20,
+  padLg: 24,
+  radius: 16,
+  radiusLg: 22,
+  radiusSm: 10,
   shadow: {
-    shadowColor: '#0F3D2E',
-    shadowOpacity: 0.07,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 3,
+    shadowColor: '#0A0F0D',
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
 };
 

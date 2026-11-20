@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StatusBar, StyleSheet, Text, View, SafeAreaView, ActivityIndicator } from 'react-native';
 import { api, checkConnection, connection, offlineMeta, setBase } from './api';
 import { DEFAULT_PROFILE, usePersisted } from './storage';
 import EventsScreen from './screens/EventsScreen';
@@ -7,16 +7,14 @@ import MyGameScreen from './screens/MyGameScreen';
 import ClubsScreen from './screens/ClubsScreen';
 import MoreScreen from './screens/MoreScreen';
 import EventSheet from './EventSheet';
-import { C } from './theme';
+import { C, S } from './theme';
 
 const TABS = [
-  { key: 'events', label: 'Турниры', icon: '⛳' },
-  { key: 'game', label: 'Моя игра', icon: '📈' },
-  { key: 'clubs', label: 'Клубы', icon: '📍' },
-  { key: 'more', label: 'Ещё', icon: '⋯' },
+  { key: 'events', label: 'Турниры' },
+  { key: 'game', label: 'Игра' },
+  { key: 'clubs', label: 'Клубы' },
+  { key: 'more', label: 'Ещё' },
 ];
-
-const TOP_INSET = Platform.OS === 'android' ? (StatusBar.currentHeight || 26) : 46;
 
 export default function App() {
   const [tab, setTab] = useState('events');
@@ -48,21 +46,19 @@ export default function App() {
       setSources(sourcesAnswer.items || []);
       setMode(api.source());
       if (!online && connection.base) {
-        setNotice(`Сервер недоступен — показываем офлайн-каталог. ${connection.lastError || ''}`.trim());
+        setNotice('Офлайн-режим');
       }
     } catch (error) {
-      setNotice(error.message || 'Не удалось загрузить данные');
+      setNotice('Ошибка загрузки');
     } finally {
       setRefreshing(false);
     }
   }, [profile.apiUrl, profileReady]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const toggleSave = useCallback((id) => {
-    setSaved((previous) => (previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]));
+    setSaved((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   }, [setSaved]);
 
   const meta = useMemo(() => ({
@@ -73,69 +69,42 @@ export default function App() {
   }), [events.length, sources]);
 
   const renderTab = () => {
-    if (tab === 'events') {
-      return (
-        <EventsScreen
-          events={events}
-          saved={saved}
-          onToggleSave={toggleSave}
-          onOpen={setSelected}
-          onRefresh={load}
-          refreshing={refreshing}
-          profile={profile}
-          mode={mode}
-          meta={meta}
-        />
-      );
+    switch (tab) {
+      case 'events': return <EventsScreen events={events} saved={saved} onToggleSave={toggleSave} onOpen={setSelected} onRefresh={load} refreshing={refreshing} profile={profile} mode={mode} meta={meta} />;
+      case 'game': return <MyGameScreen rounds={rounds} setRounds={setRounds} />;
+      case 'clubs': return <ClubsScreen clubs={clubs} />;
+      default: return <MoreScreen profile={profile} setProfile={setProfile} sources={sources} meta={meta} connection={connection} onSync={load} refreshing={refreshing} />;
     }
-    if (tab === 'game') return <MyGameScreen rounds={rounds} setRounds={setRounds} />;
-    if (tab === 'clubs') return <ClubsScreen clubs={clubs} />;
-    return (
-      <MoreScreen
-        profile={profile}
-        setProfile={setProfile}
-        sources={sources}
-        meta={meta}
-        connection={connection}
-        onSync={() => load()}
-        refreshing={refreshing}
-      />
-    );
   };
 
   return (
-    <View style={st.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={C.bg} translucent={false} />
-      <View style={[st.topbar, { paddingTop: TOP_INSET + 6 }]}>
-        <View style={st.brandRow}>
-          <View style={st.mark}><Text style={{ fontSize: 15 }}>⛳</Text></View>
-          <View>
-            <Text style={st.brand}>МИР ГОЛЬФА</Text>
-            <Text style={st.tagline}>Турниры · клубы · результаты</Text>
+    <SafeAreaView style={st.root}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      
+      {/* ПРЕМИАЛЬНЫЙ ХЕДЕР */}
+      <View style={st.header}>
+        <View>
+          <Text style={st.brand}>МИР ГОЛЬФА</Text>
+          <View style={st.statusRow}>
+            <View style={[st.dot, { backgroundColor: mode === 'network' ? '#1B4D3E' : '#999' }]} />
+            <Text style={st.statusText}>{mode === 'network' ? 'ONLINE' : 'OFFLINE'}</Text>
           </View>
         </View>
-        <Pressable onPress={load} hitSlop={12} style={st.refresh}>
-          <Text style={st.refreshIcon}>{refreshing ? '…' : '↻'}</Text>
+        <Pressable onPress={load} style={st.refresh}>
+          {refreshing ? <ActivityIndicator size="small" color="#000" /> : <Text style={st.refreshIcon}>↻</Text>}
         </Pressable>
       </View>
 
-      {!!notice && (
-        <Pressable onPress={() => setNotice('')} style={st.notice}>
-          <Text style={st.noticeText} numberOfLines={2}>{notice}</Text>
-        </Pressable>
-      )}
-
       <View style={{ flex: 1 }}>{renderTab()}</View>
 
+      {/* СТРОГИЙ ТАБ-БАР */}
       <View style={st.tabbar}>
         {TABS.map((item) => {
           const active = tab === item.key;
           return (
-            <Pressable key={item.key} onPress={() => setTab(item.key)} style={st.tabButton}>
-              <View style={[st.tabIconWrap, active && st.tabIconWrapActive]}>
-                <Text style={[st.tabIcon, active && { opacity: 1 }]}>{item.icon}</Text>
-              </View>
-              <Text style={[st.tabText, active && st.tabTextActive]}>{item.label}</Text>
+            <Pressable key={item.key} onPress={() => setTab(item.key)} style={st.tab}>
+              <View style={[st.tabIndicator, active && st.tabIndicatorActive]} />
+              <Text style={[st.tabLabel, active && st.tabLabelActive]}>{item.label.toUpperCase()}</Text>
             </Pressable>
           );
         })}
@@ -149,32 +118,29 @@ export default function App() {
           onToggleSave={() => toggleSave(selected.id)}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const st = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.bg },
-  topbar: {
-    paddingHorizontal: 18, paddingBottom: 10, backgroundColor: C.bg,
+  root: { flex: 1, backgroundColor: '#FFFFFF' },
+  header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#EEE',
   },
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
-  mark: { width: 30, height: 30, borderRadius: 10, backgroundColor: C.green, alignItems: 'center', justifyContent: 'center' },
-  brand: { fontSize: 12, fontWeight: '900', letterSpacing: 2, color: C.green },
-  tagline: { fontSize: 10, color: C.muted, marginTop: 1 },
-  refresh: { width: 34, height: 34, borderRadius: 17, backgroundColor: C.card, borderWidth: 1, borderColor: C.line, alignItems: 'center', justifyContent: 'center' },
-  refreshIcon: { fontSize: 17, color: C.green, fontWeight: '900', marginTop: -2 },
-  notice: { marginHorizontal: 18, marginBottom: 8, backgroundColor: '#FBF0DA', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 9 },
-  noticeText: { color: C.gold, fontSize: 11, lineHeight: 15, fontWeight: '700' },
+  brand: { fontSize: 16, fontWeight: '900', letterSpacing: 3, color: '#000' },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
+  dot: { width: 4, height: 4, borderRadius: 2 },
+  statusText: { fontSize: 8, fontWeight: '900', color: '#999', letterSpacing: 1 },
+  refresh: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  refreshIcon: { fontSize: 20, color: '#000', fontWeight: '300' },
   tabbar: {
-    flexDirection: 'row', backgroundColor: C.card, borderTopWidth: 1, borderTopColor: C.line,
-    paddingTop: 8, paddingBottom: Platform.OS === 'android' ? 14 : 24, paddingHorizontal: 6,
+    flexDirection: 'row', height: 60, borderTopWidth: 1, borderTopColor: '#EEE',
+    backgroundColor: '#FFF', paddingHorizontal: 10,
   },
-  tabButton: { flex: 1, alignItems: 'center', gap: 3 },
-  tabIconWrap: { width: 38, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  tabIconWrapActive: { backgroundColor: C.limeSoft },
-  tabIcon: { fontSize: 15, opacity: 0.65 },
-  tabText: { fontSize: 10, fontWeight: '700', color: C.muted },
-  tabTextActive: { color: C.green, fontWeight: '900' },
+  tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  tabIndicator: { height: 2, width: 20, backgroundColor: 'transparent', marginBottom: 6 },
+  tabIndicatorActive: { backgroundColor: '#000' },
+  tabLabel: { fontSize: 9, fontWeight: '900', color: '#999', letterSpacing: 1 },
+  tabLabelActive: { color: '#000' },
 });

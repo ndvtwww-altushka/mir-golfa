@@ -47,11 +47,11 @@ def _seed_sources(con: sqlite3.Connection) -> None:
     for source in sources:
         con.execute(
             """INSERT OR IGNORE INTO sources
-               (id, name, url, country, source_type, authority, collection_mode, enabled)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+               (id, name, url, country, region, source_type, authority, collection_mode, enabled, notes, verification_status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (source["id"], source["name"], source["url"], source.get("country"),
-             source["source_type"], source["authority"], source["collection_mode"],
-             int(source.get("enabled", True)))
+             source.get("region"), source["source_type"], source["authority"], source["collection_mode"],
+             int(source.get("enabled", True)), source.get("notes"), source.get("verification_status"))
         )
 
 

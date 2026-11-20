@@ -49,7 +49,7 @@ function Chart({ rounds }) {
         return (
           <View key={round.id} style={st.barColumn}>
             <Text style={st.barValue}>{Math.round(value) > 0 ? `+${Math.round(value)}` : Math.round(value)}</Text>
-            <View style={[st.bar, { height, backgroundColor: value <= 0 ? C.green : value <= 10 ? C.green2 : '#7E9A6B' }]} />
+            <View style={[st.bar, { height, backgroundColor: value <= 5 ? C.green : value <= 12 ? C.green2 : C.muted }]} />
             <Text style={st.barLabel}>{String(round.played_on).slice(8, 10)}.{String(round.played_on).slice(5, 7)}</Text>
           </View>
         );
@@ -102,54 +102,48 @@ export default function MyGameScreen({ rounds, setRounds }) {
     <>
       <ScrollView contentContainerStyle={st.content} showsVerticalScrollIndicator={false}>
         <View style={st.hero}>
-          <Text style={st.kicker}>ЛИЧНАЯ СТАТИСТИКА</Text>
+          <Text style={st.kicker}>ОЦЕНКА ГАНДИКАПА</Text>
           <View style={st.heroRow}>
-            <View>
-              <Text style={st.heroValue}>{handicap === null ? '—' : handicap.toFixed(1)}</Text>
-              <Text style={st.heroLabel}>оценка гандикапа</Text>
-            </View>
+            <Text style={st.heroValue}>{handicap === null ? '—' : handicap.toFixed(1)}</Text>
             <View style={st.levelBadge}><Text style={st.levelText}>{level}</Text></View>
           </View>
           <Text style={st.heroHint}>
             {handicap === null
               ? 'Добавьте три раунда — покажем примерный уровень игры.'
-              : `Считается по ${rounds.length} ${plural(rounds.length, ['раунду', 'раундам', 'раундам'])} на устройстве. Это не официальный WHS.`}
+              : `Считается по ${rounds.length} ${plural(rounds.length, ['раунду', 'раундам', 'раундам'])} на устройстве. Не официальный WHS.`}
           </Text>
         </View>
 
         <View style={st.statsRow}>
           <View style={st.stat}><Text style={st.statValue}>{rounds.length}</Text><Text style={st.statLabel}>раундов</Text></View>
           <View style={st.stat}><Text style={st.statValue}>{stats.totalHoles}</Text><Text style={st.statLabel}>лунок</Text></View>
-          <View style={st.stat}><Text style={st.statValue}>{stats.avg18 ? stats.avg18.toFixed(0) : '—'}</Text><Text style={st.statLabel}>средний / 18</Text></View>
-          <View style={st.stat}><Text style={st.statValue}>{stats.best ? stats.best.toFixed(0) : '—'}</Text><Text style={st.statLabel}>лучший / 18</Text></View>
+          <View style={st.stat}><Text style={st.statValue}>{stats.avg18 ? stats.avg18.toFixed(0) : '—'}</Text><Text style={st.statLabel}>средний</Text></View>
+          <View style={st.stat}><Text style={st.statValue}>{stats.best ? stats.best.toFixed(0) : '—'}</Text><Text style={st.statLabel}>лучший</Text></View>
         </View>
 
         <View style={st.statsRow}>
-          <View style={st.stat}><Text style={st.statValue}>{stats.putts18 ? stats.putts18.toFixed(0) : '—'}</Text><Text style={st.statLabel}>патты / 18</Text></View>
+          <View style={st.stat}><Text style={st.statValue}>{stats.putts18 ? stats.putts18.toFixed(0) : '—'}</Text><Text style={st.statLabel}>патты</Text></View>
           <View style={st.stat}><Text style={st.statValue}>{stats.girPct ? `${stats.girPct.toFixed(0)}%` : '—'}</Text><Text style={st.statLabel}>GIR</Text></View>
           <View style={st.stat}><Text style={st.statValue}>{stats.fairwayPct ? `${stats.fairwayPct.toFixed(0)}%` : '—'}</Text><Text style={st.statLabel}>фервеи</Text></View>
         </View>
 
         {rounds.length > 1 && (
-          <Card style={{ marginTop: 14 }}>
-            <Text style={[T.h3, { marginBottom: 4 }]}>Последние раунды</Text>
+          <Card style={{ marginTop: 12 }}>
+            <Text style={[T.h3, { marginBottom: 4 }]}>Прогресс</Text>
             <Text style={[T.muted, { marginBottom: 10 }]}>Отклонение от пара на 18 лунок</Text>
             <Chart rounds={rounds} />
           </Card>
         )}
 
-        <Button title="+ Записать раунд" onPress={() => setOpen(true)} style={{ marginTop: 16 }} variant="dark" />
+        <Button title="Записать раунд" onPress={() => setOpen(true)} style={{ marginTop: 16 }} variant="primary" />
 
-        <View style={st.listHead}>
-          <Text style={[T.h2]}>История</Text>
-          <Text style={T.tiny}>{rounds.length} записей</Text>
-        </View>
+        <Text style={T.section}>История · {rounds.length}</Text>
 
         {rounds.length === 0 ? (
           <Empty
             title="Пока ни одного раунда"
-            text="Добавьте счёт после игры — приложение посчитает средний результат, патты, GIR и фервеи. Всё хранится только на телефоне."
-            action="Записать первый раунд"
+            text="Добавьте счёт после игры — посчитаем средний результат, патты, GIR и фервеи. Всё хранится только на телефоне."
+            action="Записать первый"
             onAction={() => setOpen(true)}
           />
         ) : (
@@ -174,8 +168,7 @@ export default function MyGameScreen({ rounds, setRounds }) {
         )}
 
         <Text style={st.footer}>
-          Это личный журнал, а не турнирный протокол. Официальный гандикап считается по правилам WHS
-          и подтверждается федерацией.
+          Личный журнал, а не турнирный протокол. Официальный гандикап считается по правилам WHS и подтверждается федерацией.
         </Text>
       </ScrollView>
 
@@ -206,7 +199,7 @@ export default function MyGameScreen({ rounds, setRounds }) {
             placeholder={placeholder}
           />
         ))}
-        <Button title="Сохранить на устройстве" onPress={save} />
+        <Button title="Сохранить" onPress={save} />
       </Sheet>
     </>
   );
@@ -214,28 +207,27 @@ export default function MyGameScreen({ rounds, setRounds }) {
 
 const st = StyleSheet.create({
   content: { paddingHorizontal: S.pad, paddingBottom: 28 },
-  hero: { backgroundColor: C.green, borderRadius: 26, padding: 20, marginTop: 10 },
-  kicker: { color: C.lime, fontSize: 10, fontWeight: '900', letterSpacing: 1.6 },
-  heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
-  heroValue: { color: C.white, fontSize: 46, fontWeight: '900', lineHeight: 50 },
-  heroLabel: { color: '#BFD3C4', fontSize: 12, marginTop: 2 },
-  levelBadge: { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8, maxWidth: 150 },
-  levelText: { color: C.lime, fontSize: 11, fontWeight: '800', textAlign: 'center' },
-  heroHint: { color: '#DCE9DE', fontSize: 12, lineHeight: 18, marginTop: 14 },
+  hero: { backgroundColor: C.green, borderRadius: S.radiusLg, padding: 24, marginTop: 16 },
+  kicker: { color: '#9DB5A8', fontSize: 10, fontWeight: '800', letterSpacing: 1.8 },
+  heroRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 },
+  heroValue: { color: C.white, fontSize: 52, fontWeight: '800', lineHeight: 58, letterSpacing: -1 },
+  levelBadge: { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, maxWidth: 150 },
+  levelText: { color: C.white, fontSize: 11, fontWeight: '700', textAlign: 'center', letterSpacing: 0.3 },
+  heroHint: { color: '#C4D4CB', fontSize: 12, lineHeight: 17, marginTop: 14 },
   statsRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  stat: { flex: 1, backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 8, alignItems: 'center' },
-  statValue: { fontSize: 19, fontWeight: '900', color: C.ink },
-  statLabel: { fontSize: 10, color: C.muted, marginTop: 2, textAlign: 'center' },
+  stat: { flex: 1, backgroundColor: C.card, borderWidth: 1, borderColor: C.line, borderRadius: S.radiusSm, paddingVertical: 13, paddingHorizontal: 6, alignItems: 'center' },
+  statValue: { fontSize: 18, fontWeight: '800', color: C.ink },
+  statLabel: { fontSize: 10, color: C.muted, marginTop: 2, textAlign: 'center', letterSpacing: 0.3, textTransform: 'uppercase' },
   chart: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 116, marginTop: 6 },
   barColumn: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
-  bar: { width: 18, borderRadius: 6 },
+  bar: { width: 16, borderRadius: 4 },
   barValue: { fontSize: 9, color: C.muted, marginBottom: 4, fontWeight: '700' },
   barLabel: { fontSize: 9, color: C.muted, marginTop: 5 },
   listHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 22, marginBottom: 10 },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
-  delete: { color: C.red, fontSize: 12, fontWeight: '800' },
+  delete: { color: C.red, fontSize: 12, fontWeight: '600' },
   roundBadges: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginTop: 10 },
   footer: { fontSize: 10, lineHeight: 15, color: C.muted, textAlign: 'center', marginTop: 22 },
-  fieldLabel: { fontSize: 12, fontWeight: '800', color: C.ink2, marginBottom: 8 },
+  fieldLabel: { fontSize: 11, fontWeight: '700', color: C.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
   chipRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
 });

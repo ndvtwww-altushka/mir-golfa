@@ -203,7 +203,8 @@ def all_verified_results(limit: int = Query(default=50, ge=1, le=100), offset: i
 
 @app.get(f"{API_PREFIX}/sources")
 def list_sources(country: str | None = None, enabled_only: bool = True):
-    sql = "SELECT id, name, url, country, source_type, authority, collection_mode, enabled, last_attempt_at, last_success_at, last_error FROM sources"
+    sql = ("SELECT id, name, url, country, region, source_type, authority, collection_mode, enabled, "
+           "notes, verification_status, last_attempt_at, last_success_at, last_error FROM sources")
     params: list[Any] = []
     clauses: list[str] = []
     if enabled_only:
