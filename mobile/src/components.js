@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { C, S } from './theme';
 
 export const T = StyleSheet.create({
@@ -41,8 +42,7 @@ export function Button({ title, onPress, variant = 'primary', disabled, style })
 
 export function Chip({ title, active, onPress, tone = 'default' }) {
   return (
-    <Pressable onPress={onPress} style={[st.chip, active && st.chipActive]}>
-      <Text style={[st.chipText, active && st.chipTextActive]}>{title}</Text>
+    <Pressable onPress={onPress} style={[st.chip, active && st.chipActive]}>\n      <Text style={[st.chipText, active && st.chipTextActive]}>{title}</Text>
     </Pressable>
   );
 }
@@ -69,91 +69,39 @@ export function Card({ children, onPress, style }) {
   const content = <View style={[st.card, style]}>{children}</View>;
   if (!onPress) return content;
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.95 : 1 })}>
-      {content}
-    </Pressable>
-  );
+    <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.95 : 1 })}>\n      {content}\n    </Pressable>\n  );
 }
 
 export function Section({ title, hint, right, children, style }) {
   return (
-    <View style={style}>
-      <View style={st.sectionHead}>
-        <Text style={[T.section, { marginTop: 0, marginBottom: 0, flex: 1 }]}>{title}</Text>
-        {right}
-      </View>
-      {!!hint && <Text style={[T.muted, { marginTop: 4, marginBottom: 10 }]}>{hint}</Text>}
-      <View style={{ marginTop: hint ? 0 : 10 }}>{children}</View>
-    </View>
-  );
+    <View style={style}>\n      <View style={st.sectionHead}>\n        <Text style={[T.section, { marginTop: 0, marginBottom: 0, flex: 1 }]}>{title}</Text>\n        {right}\n      </View>\n      {!!hint && <Text style={[T.muted, { marginTop: 4, marginBottom: 10 }]}>{hint}</Text>}\n      <View style={{ marginTop: hint ? 0 : 10 }}>{children}</View>\n    </View>\n  );
 }
 
 export function Stat({ value, label, tone }) {
   return (
-    <View style={st.stat}>
-      <Text style={[st.statValue, tone === 'green' && { color: C.green }, tone === 'muted' && { color: C.muted }]}>{value}</Text>
-      <Text style={st.statLabel}>{label}</Text>
-    </View>
-  );
+    <View style={st.stat}>\n      <Text style={[st.statValue, tone === 'green' && { color: C.green }, tone === 'muted' && { color: C.muted }]}>{value}</Text>\n      <Text style={st.statLabel}>{label}</Text>\n    </View>\n  );
 }
 
 export function Empty({ title, text, action, onAction }) {
   return (
-    <View style={st.empty}>
-      <Text style={[T.h3, { textAlign: 'center', marginTop: 0 }]}>{title}</Text>
-      <Text style={[T.muted, { textAlign: 'center', marginTop: 6 }]}>{text}</Text>
-      {!!action && <Button title={action} onPress={onAction} variant="secondary" style={{ marginTop: 14 }} />}
-    </View>
-  );
+    <View style={st.empty}>\n      <Ionicons name="alert-circle-outline" size={32} color={C.muted} style={{ marginBottom: 10 }} />
+      <Text style={[T.h3, { textAlign: 'center', marginTop: 0 }]}>{title}</Text>\n      <Text style={[T.muted, { textAlign: 'center', marginTop: 6 }]}>{text}</Text>\n      {!!action && <Button title={action} onPress={onAction} variant=\"secondary\" style={{ marginTop: 14 }} />}\n    </View>\n  );
 }
 
 export function Field({ label, value, onChangeText, placeholder, hint, ...rest }) {
   return (
-    <View style={{ marginBottom: 12 }}>
-      {!!label && <Text style={st.fieldLabel}>{label}</Text>}
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor="#C0C5BF"
-        style={st.input}
-        {...rest}
-      />
-      {!!hint && <Text style={[T.tiny, { marginTop: 5 }]}>{hint}</Text>}
-    </View>
-  );
+    <View style={{ marginBottom: 12 }}>\n      {!!label && <Text style={st.fieldLabel}>{label}</Text>}\n      <TextInput\n        value={value}\n        onChangeText={onChangeText}\n        placeholder={placeholder}\n        placeholderTextColor=\"#C0C5BF\"\n        style={st.input}\n        {...rest}\n      />\n      {!!hint && <Text style={[T.tiny, { marginTop: 5 }]}>{hint}</Text>}\n    </View>\n  );
 }
 
 export function Sheet({ visible, onClose, title, children, footer }) {
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={st.sheetBackdrop}>
-        <Pressable style={{ flex: 1 }} onPress={onClose} />
-        <View style={st.sheet}>
-          <View style={st.sheetHandle} />
-          <View style={st.sheetHead}>
-            <Text style={[T.h2, { flex: 1 }]} numberOfLines={2}>{title}</Text>
-            <Pressable onPress={onClose} hitSlop={12} style={st.closeBtn}>
-              <Text style={{ fontSize: 18, color: C.muted, fontWeight: '300' }}>✕</Text>
-            </Pressable>
-          </View>
-          <ScrollView contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
-            {children}
-          </ScrollView>
-          {footer}
-        </View>
-      </View>
-    </Modal>
-  );
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>\n      <View style={st.sheetBackdrop}>\n        <Pressable style={{ flex: 1 }} onPress={onClose} />\n        <View style={st.sheet}>\n          <View style={st.sheetHandle} />\n          <View style={st.sheetHead}>\n            <Text style={[T.h2, { flex: 1 }]} numberOfLines={2}>{title}</Text>\n            <Pressable onPress={onClose} hitSlop={12} style={st.closeBtn}>\n              <Ionicons name="close" size={18} color={C.ink2} />
+            </Pressable>\n          </View>\n          <ScrollView contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>\n            {children}\n          </ScrollView>\n          {footer}\n        </View>\n      </View>\n    </Modal>\n  );
 }
 
 export function Loading({ label = 'Загружаем' }) {
   return (
-    <View style={{ paddingVertical: 40, alignItems: 'center' }}>
-      <ActivityIndicator color={C.ink} />
-      <Text style={[T.muted, { marginTop: 10 }]}>{label}</Text>
-    </View>
-  );
+    <View style={{ paddingVertical: 40, alignItems: 'center' }}>\n      <ActivityIndicator color={C.ink} />\n      <Text style={[T.muted, { marginTop: 10 }]}>{label}</Text>\n    </View>\n  );
 }
 
 const st = StyleSheet.create({

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Linking, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { C, S } from './theme';
 import { Button, Card, Pill, Sheet, T } from './components';
 import {
@@ -31,9 +32,7 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
       </View>
 
       <Text style={st.date}>{dateRangeWithYear(event.start_date, event.end_date)}</Text>
-      <Text style={[T.body, { marginTop: 6 }]}>
-        {[event.venue, event.venue_address, event.city, event.region, event.country].filter(Boolean).join(' · ') || 'Место уточняется'}
-      </Text>
+      <Text style={[T.body, { marginTop: 6 }]}>\n        {[event.venue, event.venue_address, event.city, event.region, event.country].filter(Boolean).join(' · ') || 'Место уточняется'}\n      </Text>
 
       <View style={st.actionRow}>
         <Button title={saved ? '★ В избранном' : '☆ В избранное'} variant="secondary" onPress={onToggleSave} style={{ flexGrow: 1 }} />
@@ -47,7 +46,7 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
         <Text style={[T.h3]}>Детали</Text>
         <Row label="Уровень" value={event.level || 'уточняется'} />
         <Row label="Организатор" value={event.organizer || 'уточняется'} />
-        <Row label="Допуск" value={event.age_group || 'без ограничений по возрасту'} />
+        <Row label="Возраст" value={event.age_group || 'без ограничений по возрасту'} />
         {(event.hcp_min != null || event.hcp_max != null) && (
           <Row
             label="Гандикап"
@@ -56,7 +55,7 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
         )}
         <Row label="Регистрация" value={REGISTRATION_LABEL[event.registration_status] || 'не подтверждена'} />
         {!!event.entry_fee_text && <Row label="Стоимость" value={event.entry_fee_text} />}
-        {!!event.format && <Row label="Формат" value={event.format} />}
+        !!event.format && <Row label="Формат" value={event.format} />
       </Card>
 
       {!!event.eligibility_notes && (
@@ -68,45 +67,28 @@ export default function EventSheet({ event, onClose, saved, onToggleSave }) {
 
       <Card style={{ marginTop: 10 }}>
         <Text style={[T.h3]}>Источник</Text>
-        <Text style={[T.muted, { marginTop: 6 }]}>
-          {event.source_name || 'Первоисточник'}
-          {event.source_authority ? ` · ${AUTHORITY_LABEL[event.source_authority] || event.source_authority}` : ''}
-        </Text>
+        <Text style={[T.muted, { marginTop: 6 }]}>{event.source_name || 'Первоисточник'}{event.source_authority ? ` · ${AUTHORITY_LABEL[event.source_authority] || event.source_authority}` : ''}</Text>
         {!!event.source_excerpt && <Text style={st.excerpt}>«{event.source_excerpt}»</Text>}
-        <Text style={[T.tiny, { marginTop: 8 }]}>
-          Проверка: {event.last_checked_at ? String(event.last_checked_at).slice(0, 10) : 'нет отметки'} · {freshnessLabel(event.freshness_state)}
-        </Text>
-        {!!event.source_url && (
-          <Text style={st.link} onPress={() => openUrl(event.source_url)}>Открыть первоисточник</Text>
-        )}
+        <Text style={[T.tiny, { marginTop: 8 }]}>Проверка: {event.last_checked_at ? String(event.last_checked_at).slice(0, 10) : 'нет отметки'} · {freshnessLabel(event.freshness_state)}</Text>
+        {!!event.source_url && (<Text style={st.link} onPress={() => openUrl(event.source_url)}>Открыть первоисточник</Text>)}
       </Card>
 
       <Card style={{ marginTop: 10 }}>
         <Text style={[T.h3]}>Результаты</Text>
-        <Text style={[T.muted, { marginTop: 6 }]}>
-          Показываем только официальные протоколы с источником. Если протокола нет — карточка остаётся
-          без победителя и счёта.
-        </Text>
+        <Text style={[T.muted, { marginTop: 6 }]}>Показываем только официальные протоколы с источником. Если протокола нет — карточка остаётся без победителя и счёта.</Text>
       </Card>
 
       {!!event.registration_url && (
         <Button title="Перейти к регистрации" onPress={() => openUrl(event.registration_url)} style={{ marginTop: 14 }} />
       )}
       {!!event.contact_phone && (
-        <Button
-          title={`Позвонить ${event.contact_phone}`}
-          variant="secondary"
-          onPress={() => openUrl(`tel:${String(event.contact_phone).replace(/[^0-9+]/g, '')}`)}
-          style={{ marginTop: 8 }}
-        />
+        <Button title={`Позвонить ${event.contact_phone}`} variant="secondary" onPress={() => openUrl(`tel:${String(event.contact_phone).replace(/[^0-9+]/g, '')}`)} style={{ marginTop: 8 }} />
       )}
       {!!event.regulations_url && (
         <Button title="Положение о турнире" variant="ghost" onPress={() => openUrl(event.regulations_url)} style={{ marginTop: 8 }} />
       )}
 
-      <Pressable
-        onPress={() => openUrl(`mailto:events@mirgolfa.ru?subject=${encodeURIComponent(`Исправление: ${event.name}`)}&body=${encodeURIComponent(`Событие: ${event.name}\n${event.id}\n\nЧто не так:\n\nСсылка на подтверждение:\n`)}`)}
-      >
+      <Pressable onPress={() => openUrl(`mailto:events@mirgolfa.ru?subject=${encodeURIComponent(`Исправление: ${event.name}`)}&body=${encodeURIComponent(`Событие: ${event.name}\n${event.id}\n\nЧто не так:\n\nСсылка на подтверждение:\n`)}`)}>
         <Text style={st.correction}>Нашли ошибку? Напишите нам</Text>
       </Pressable>
     </Sheet>

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { C, S } from '../theme';
 import { Button, Card, Chip, Field, Pill, T } from '../components';
 import { api } from '../api';
@@ -133,7 +134,7 @@ export default function MoreScreen({ profile, setProfile, sources, meta, connect
 
       <Text style={T.section}>Источники · {filteredSources.length}</Text>
       <View style={st.searchWrap}>
-        <Text style={st.searchIcon}>⌕</Text>
+        <Ionicons name="search-outline" size={18} color={C.muted} style={{ marginRight: 8 }} />
         <TextInput
           value={sourceQuery}
           onChangeText={setSourceQuery}

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { C, S, plural } from '../theme';
 import { Button, Card, Chip, Empty, Pill, T } from '../components';
 import { countdown, dateRangeWithYear, isPast, monthShort, monthTitle, statusLabel } from '../format';
@@ -24,19 +25,15 @@ function EventCard({ event, saved, onPress, onToggleSave }) {
     <Pressable onPress={onPress} style={({ pressed }) => [st.card, past && { opacity: 0.6 }, pressed && { opacity: 0.85 }]}>
       <View style={st.cardRow}>
         <View style={[st.dateBox, past && { backgroundColor: C.bg2 }]}>
-          <Text style={[st.dateDay, past && { color: C.muted }]}>{String(event.start_date).slice(8, 10)}</Text>
-          <Text style={[st.dateMonth, past && { color: C.muted }]}>{monthShort(event.start_date)}</Text>
-        </View>
+          <Text style={[st.dateDay, past && { color: C.muted }]}>{String(event.start_date).slice(8, 10)}</Text>\n          <Text style={[st.dateMonth, past && { color: C.muted }]}>{monthShort(event.start_date)}</Text>\n        </View>
         <View style={{ flex: 1 }}>
           <View style={st.badges}>
             <Pill tone={levelTone(event.level)}>{event.level || 'уточняется'}</Pill>
             <Pill tone={when.tone}>{when.text}</Pill>
           </View>
-          <Text style={st.title} numberOfLines={2}>{event.name}</Text>
-          <Text style={st.meta} numberOfLines={1}>{event.venue || event.region || 'Место уточняется'}</Text>
-        </View>
+          <Text style={st.title} numberOfLines={2}>{event.name}</Text>\n          <Text style={st.meta} numberOfLines={1}>{event.venue || event.region || 'Место уточняется'}</Text>\n        </View>
         <Pressable onPress={onToggleSave} hitSlop={12} style={st.star}>
-          <Text style={{ fontSize: 18, color: saved ? C.gold : C.lineStrong, fontWeight: '700' }}>{saved ? '★' : '☆'}</Text>
+          <Ionicons name={saved ? 'star' : 'star-outline'} size={18} color={saved ? C.gold : C.lineStrong} />
         </Pressable>
       </View>
       {!!event.entry_fee_text && <Text style={st.fee}>{event.entry_fee_text}</Text>}
@@ -89,9 +86,7 @@ export default function EventsScreen({
         }
         return true;
       })
-      .sort((a, b) => (period === 'archive'
-        ? b.start_date.localeCompare(a.start_date)
-        : a.start_date.localeCompare(b.start_date)));
+      .sort((a, b) => (period === 'archive'\n        ? b.start_date.localeCompare(a.start_date)\n        : a.start_date.localeCompare(b.start_date)));
   }, [events, period, sport, region, savedOnly, saved, query, profile.handicap]);
 
   const groups = useMemo(() => {
@@ -99,8 +94,7 @@ export default function EventsScreen({
     filtered.forEach((event) => {
       const key = String(event.start_date).slice(0, 7);
       const last = buckets[buckets.length - 1];
-      if (last && last.key === key) last.items.push(event);
-      else buckets.push({ key, items: [event] });
+      if (last && last.key === key) last.items.push(event);\n      else buckets.push({ key, items: [event] });
     });
     return buckets;
   }, [filtered]);
@@ -112,8 +106,7 @@ export default function EventsScreen({
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.ink} />}
     >
       <View style={st.hero}>
-        <Text style={st.heroKicker}>СЕЗОН {meta.season}</Text>
-        <Text style={st.heroTitle}>
+        <Text style={st.heroKicker}>СЕЗОН {meta.season}</Text>\n        <Text style={st.heroTitle}>
           {upcomingCount > 0
             ? `${upcomingCount} ${plural(upcomingCount, ['турнир', 'турнира', 'турниров'])} впереди`
             : 'Сезон закрыт'}
@@ -123,12 +116,11 @@ export default function EventsScreen({
           <View style={st.heroDivider} />
           <View style={st.heroStat}><Text style={st.heroStatValue}>{meta.sources.filter((s) => s.enabled !== false).length}</Text><Text style={st.heroStatLabel}>источников</Text></View>
           <View style={st.heroDivider} />
-          <View style={st.heroStat}><Text style={st.heroStatValue}>{new Set(events.map((e) => e.region).filter(Boolean)).size}</Text><Text style={st.heroStatLabel}>регионов</Text></View>
-        </View>
+          <View style={st.heroStat}><Text style={st.heroStatValue}>{new Set(events.map((e) => e.region).filter(Boolean)).size}</Text><Text style={st.heroStatLabel}>регионов</Text></View>\n        </View>
       </View>
 
       <View style={st.searchWrap}>
-        <Text style={st.searchIcon}>⌕</Text>
+        <Ionicons name="search-outline" size={18} color={C.muted} style={{ marginRight: 8 }} />
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -137,63 +129,35 @@ export default function EventsScreen({
           style={st.search}
           returnKeyType="search"
         />
-        {!!query && <Pressable onPress={() => setQuery('')} hitSlop={10}><Text style={st.clear}>✕</Text></Pressable>}
+        {!!query && (
+          <Pressable onPress={() => setQuery('')} hitSlop={10}>
+            <Ionicons name="close-circle" size={16} color={C.muted} />
+          </Pressable>
+        )}
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.chips}>
-        {PERIODS.map((item) => (
-          <Chip key={item.key} title={item.label} active={period === item.key} onPress={() => setPeriod(item.key)} />
-        ))}
-        <Chip title={savedOnly ? '★ Избранное' : '☆ Избранное'} active={savedOnly} onPress={() => setSavedOnly((value) => !value)} />
-      </ScrollView>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.chips}>
-        <Chip title="Все виды" active={sport === 'all'} onPress={() => setSport('all')} />
-        <Chip title="Гольф" active={sport === 'golf'} onPress={() => setSport('golf')} />
-        <Chip title="Мини-гольф" active={sport === 'mini_golf'} onPress={() => setSport('mini_golf')} />
-        {regions.map((name) => (
-          <Chip key={name} title={name} active={region === name} onPress={() => setRegion(region === name ? null : name)} />
-        ))}
-      </ScrollView>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.chips}>\n        {PERIODS.map((item) => (\n          <Chip key={item.key} title={item.label} active={period === item.key} onPress={() => setPeriod(item.key)} />\n        ))}\n        <Chip title={savedOnly ? '★ Избранное' : '☆ Избранное'} active={savedOnly} onPress={() => setSavedOnly((value) => !value)} />\n      </ScrollView>\n\n      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={st.chips}>\n        <Chip title=\"Все виды\" active={sport === 'all'} onPress={() => setSport('all')} />\n        <Chip title=\"Гольф\" active={sport === 'golf'} onPress={() => setSport('golf')} />\n        <Chip title=\"Мини-гольф\" active={sport === 'mini_golf'} onPress={() => setSport('mini_golf')} />\n        {regions.map((name) => (\n          <Chip key={name} title={name} active={region === name} onPress={() => setRegion(region === name ? null : name)} />\n        ))}\n      </ScrollView>
 
       {filtered.length === 0 ? (
         <Empty
-          title={savedOnly ? 'В избранном пусто' : period === 'upcoming' ? 'Ближайших турниров нет' : 'Ничего не нашлось'}
-          text={savedOnly
+          title={savedOnly ? 'В избранном пусто' : period === 'upcoming' ? 'Ближайших турниров нет' : 'Ничего не нашлось'}\n          text={savedOnly
             ? 'Отмечайте турниры звёздочкой — они соберутся здесь.'
             : period === 'upcoming'
               ? 'Календарь сезона закончился. Новые даты появятся после публикации АГР.'
               : 'Попробуйте изменить фильтры или очистить поиск.'}
-          action={period === 'upcoming' ? 'Открыть архив' : 'Сбросить фильтры'}
-          onAction={() => {
-            if (period === 'upcoming') setPeriod('archive');
-            else { setQuery(''); setSport('all'); setRegion(null); setSavedOnly(false); }
-          }}
-        />
+          action={period === 'upcoming' ? 'Открыть архив' : 'Сбросить фильтры'}\n          onAction={() => {\n            if (period === 'upcoming') setPeriod('archive');\n            else { setQuery(''); setSport('all'); setRegion(null); setSavedOnly(false); }\n          }}\n        />
       ) : (
         groups.map((group) => (
-          <View key={group.key} style={{ marginTop: 22 }}>
-            <View style={st.groupHead}>
-              <Text style={st.groupTitle}>{monthTitle(`${group.key}-01`)}</Text>
-              <Text style={st.groupCount}>{group.items.length}</Text>
-            </View>
-            {group.items.map((event) => (
-              <EventCard
+          <View key={group.key} style={{ marginTop: 22 }}>\n            <View style={st.groupHead}>\n              <Text style={st.groupTitle}>{monthTitle(`${group.key}-01`)}</Text>\n              <Text style={st.groupCount}>{group.items.length}</Text>\n            </View>\n            {group.items.map((event) => (\n              <EventCard
                 key={event.id}
                 event={event}
                 saved={saved.includes(event.id)}
                 onPress={() => onOpen(event)}
                 onToggleSave={() => onToggleSave(event.id)}
               />
-            ))}
-          </View>
-        ))
-      )}
+            ))}\n          </View>\n        ))\n      )}
 
-      <Text style={st.footer}>
-        Данные: официальный календарь АГР и положения организаторов. Прошедшие даты не означают завершение турнира.
-      </Text>
-    </ScrollView>
+      <Text style={st.footer}>\n        Данные: официальный календарь АГР и положения организаторов. Прошедшие даты не означают завершение турнира.\n      </Text>\n    </ScrollView>
   );
 }
 
@@ -208,9 +172,7 @@ const st = StyleSheet.create({
   heroStatLabel: { color: '#9DB5A8', fontSize: 9, marginTop: 2, letterSpacing: 0.6, textTransform: 'uppercase' },
   heroDivider: { width: 1, height: 26, backgroundColor: 'rgba(255,255,255,0.15)' },
   searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.bg2, borderWidth: 1, borderColor: C.line, borderRadius: S.radiusSm, paddingHorizontal: 14, marginBottom: 10 },
-  searchIcon: { fontSize: 18, color: C.muted, marginRight: 10, marginTop: -2 },
   search: { flex: 1, paddingVertical: 14, fontSize: 15, color: C.ink },
-  clear: { color: C.muted, fontSize: 14, padding: 4 },
   chips: { gap: 8, paddingVertical: 5, paddingRight: 12 },
   groupHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
   groupTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 1, color: C.muted, textTransform: 'uppercase' },

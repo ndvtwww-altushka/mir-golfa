@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, Pressable, StatusBar, StyleSheet, Text, View, SafeAreaView, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { api, checkConnection, connection, offlineMeta, setBase } from './api';
 import { DEFAULT_PROFILE, usePersisted } from './storage';
 import EventsScreen from './screens/EventsScreen';
@@ -10,10 +11,10 @@ import EventSheet from './EventSheet';
 import { C, S } from './theme';
 
 const TABS = [
-  { key: 'events', label: 'Турниры' },
-  { key: 'game', label: 'Игра' },
-  { key: 'clubs', label: 'Клубы' },
-  { key: 'more', label: 'Ещё' },
+  { key: 'events', label: 'Турниры', icon: 'trophy-outline', iconActive: 'trophy' },
+  { key: 'game', label: 'Игра', icon: 'golf-outline', iconActive: 'golf' },
+  { key: 'clubs', label: 'Клубы', icon: 'map-outline', iconActive: 'map' },
+  { key: 'more', label: 'Ещё', icon: 'ellipsis-horizontal-outline', iconActive: 'ellipsis-horizontal' },
 ];
 
 export default function App() {
@@ -70,11 +71,7 @@ export default function App() {
 
   const renderTab = () => {
     switch (tab) {
-      case 'events': return <EventsScreen events={events} saved={saved} onToggleSave={toggleSave} onOpen={setSelected} onRefresh={load} refreshing={refreshing} profile={profile} mode={mode} meta={meta} />;
-      case 'game': return <MyGameScreen rounds={rounds} setRounds={setRounds} />;
-      case 'clubs': return <ClubsScreen clubs={clubs} />;
-      default: return <MoreScreen profile={profile} setProfile={setProfile} sources={sources} meta={meta} connection={connection} onSync={load} refreshing={refreshing} />;
-    }
+      case 'events': return <EventsScreen events={events} saved={saved} onToggleSave={toggleSave} onOpen={setSelected} onRefresh={load} refreshing={refreshing} profile={profile} mode={mode} meta={meta} />;\n      case 'game': return <MyGameScreen rounds={rounds} setRounds={setRounds} />;\n      case 'clubs': return <ClubsScreen clubs={clubs} />;\n      default: return <MoreScreen profile={profile} setProfile={setProfile} sources={sources} meta={meta} connection={connection} onSync={load} refreshing={refreshing} />;\n    }
   };
 
   return (
@@ -84,14 +81,17 @@ export default function App() {
       {/* ПРЕМИАЛЬНЫЙ ХЕДЕР */}
       <View style={st.header}>
         <View>
-          <Text style={st.brand}>МИР ГОЛЬФА</Text>
-          <View style={st.statusRow}>
+          <Text style={st.brand}>МИР ГОЛЬФА</Text>\n          <View style={st.statusRow}>
             <View style={[st.dot, { backgroundColor: mode === 'network' ? '#1B4D3E' : '#999' }]} />
             <Text style={st.statusText}>{mode === 'network' ? 'ONLINE' : 'OFFLINE'}</Text>
           </View>
         </View>
         <Pressable onPress={load} style={st.refresh}>
-          {refreshing ? <ActivityIndicator size="small" color="#000" /> : <Text style={st.refreshIcon}>↻</Text>}
+          {refreshing ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Ionicons name="refresh-outline" size={20} color="#000" />
+          )}
         </Pressable>
       </View>
 
@@ -100,10 +100,14 @@ export default function App() {
       {/* СТРОГИЙ ТАБ-БАР */}
       <View style={st.tabbar}>
         {TABS.map((item) => {
-          const active = tab === item.key;
-          return (
+          const active = tab === item.key;\n          return (
             <Pressable key={item.key} onPress={() => setTab(item.key)} style={st.tab}>
-              <View style={[st.tabIndicator, active && st.tabIndicatorActive]} />
+              <Ionicons
+                name={active ? item.iconActive : item.icon}
+                size={20}
+                color={active ? '#0E4633' : '#8A938E'}
+                style={{ marginBottom: 4 }}
+              />
               <Text style={[st.tabLabel, active && st.tabLabelActive]}>{item.label.toUpperCase()}</Text>
             </Pressable>
           );
@@ -133,14 +137,11 @@ const st = StyleSheet.create({
   dot: { width: 4, height: 4, borderRadius: 2 },
   statusText: { fontSize: 8, fontWeight: '900', color: '#999', letterSpacing: 1 },
   refresh: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  refreshIcon: { fontSize: 20, color: '#000', fontWeight: '300' },
   tabbar: {
     flexDirection: 'row', height: 60, borderTopWidth: 1, borderTopColor: '#EEE',
-    backgroundColor: '#FFF', paddingHorizontal: 10,
+    backgroundColor: '#FFF', paddingHorizontal: 10, paddingVertical: 5,
   },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  tabIndicator: { height: 2, width: 20, backgroundColor: 'transparent', marginBottom: 6 },
-  tabIndicatorActive: { backgroundColor: '#000' },
-  tabLabel: { fontSize: 9, fontWeight: '900', color: '#999', letterSpacing: 1 },
-  tabLabelActive: { color: '#000' },
+  tabLabel: { fontSize: 9, fontWeight: '900', color: '#8A938E', letterSpacing: 1 },
+  tabLabelActive: { color: '#0E4633' },
 });
