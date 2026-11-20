@@ -38,13 +38,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - uses: android-actions/setup-android@v3
-
       - name: Android SDK
+        # На ubuntu-latest SDK уже установлен; setup-android ломается на новых
+        # cmdline-tools с ошибкой «Failed to find package 'tools'».
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null 2>&1 || true
-          sdkmanager --list_installed | tail -20
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME/build-tools" 2>/dev/null || true
+          ls "$ANDROID_HOME/platforms" 2>/dev/null || true
 
       - name: Иконки
         run: python3 tools/make_icon.py
