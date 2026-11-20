@@ -1,0 +1,36 @@
+[
+  {
+    "id": "golf-na-skladochnoy",
+    "name": "Гольф-клуб «Гольф на Складочной»",
+    "country": "Россия",
+    "region": "Москва",
+    "city": "Москва",
+    "address": "ул. Складочная, д. 1, стр. 13",
+    "website": "https://greenfee.ru/events/zimnij-kubok-forest-hills-1-etap",
+    "phone": "+7 (965) 223-70-70",
+    "email": null,
+    "latitude": null,
+    "longitude": null,
+    "source_url": "https://admin.greenfee.ru/wp-content/uploads/2026/10/polozhenie_zimnij_kubok_forest_hills_2026%E2%80%932027-3.docx",
+    "source_excerpt": "Положение, §4: основное место проведения турнира — гольф-клуб «Гольф на Складочной», г. Москва, ул. Складочная, д. 1, стр. 13. §5 содержит телефон ресепшена.",
+    "evidence_state": "verified",
+    "checked_at": "2026-11-19"
+  },
+  {
+    "id": "playground-skladochnaya",
+    "name": "Гольф-клуб «Playground»",
+    "country": "Россия",
+    "region": "Москва",
+    "city": "Москва",
+    "address": "ул. Складочная, д. 1, стр. 1, ТЦ «Станколит»",
+    "website": "https://greenfee.ru/events/zimnij-kubok-forest-hills-1-etap",
+    "phone": null,
+    "email": null,
+    "latitude": null,
+    "longitude": null,
+    "source_url": "https://admin.greenfee.ru/wp-content/uploads/2026/10/polozhenie_zimnij_kubok_forest_hills_2026%E2%80%932027-3.docx",
+    "source_excerpt": "Положение, §4: альтернативная площадка для игроков с левосторонней стойкой — гольф-клуб «Playground», г. Москва, ул. Складочная, д. 1, стр. 1, ТЦ «Станколит».",
+    "evidence_state": "verified",
+    "checked_at": "2026-11-19"
+  }
+]

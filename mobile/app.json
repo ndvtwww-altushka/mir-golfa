@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Мир Гольфа",
+    "slug": "mir-golfa",
+    "version": "2.1.0",
+    "orientation": "portrait",
+    "scheme": "mirgolfa",
+    "description": "Календарь турниров по гольфу и мини-гольфу: даты, клубы, результаты и личная статистика. Каждое событие со ссылкой на первоисточник.",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F3D2E"
+    },
+    "android": {
+      "package": "ru.mirgolf.app",
+      "versionCode": 21,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F3D2E"
+      },
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "ios": {
+      "bundleIdentifier": "ru.mirgolf.app",
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "name": "Мир Гольфа",
+      "shortName": "Мир Гольфа",
+      "themeColor": "#0F3D2E",
+      "backgroundColor": "#F2F5EE"
+    },
+    "experiments": {
+      "baseUrl": "/mir-golfa"
+    }
+  }
+}

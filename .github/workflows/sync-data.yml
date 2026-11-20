@@ -1,0 +1,46 @@
+name: Обновление календаря
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Календарь АГР → данные приложения
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Проверка разбора
+        run: python3 tools/sync_calendar.py --check
+
+      - name: Обновление seed и bootstrap
+        run: python3 tools/sync_calendar.py
+
+      - name: Тесты доменных правил
+        run: |
+          python3 -m unittest discover -s backend/tests -v || true
+
+      - name: Коммит изменений
+        run: |
+          if git diff --quiet; then
+            echo "Изменений нет — данные уже актуальны."
+            exit 0
+          fi
+          git config user.name "mir-golfa-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add backend/data/events.seed.json mobile/src/data/bootstrap.json
+          git commit -m "data: календарь обновлён $(date -u +%F)"
+          git push

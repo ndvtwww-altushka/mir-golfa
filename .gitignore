@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Локальные данные и секреты
+backend/data/*.sqlite3
+.env
+mobile/.env
+
+# Expo / Node
+node_modules/
+.expo/
+dist/
+web-build/
+mobile/android/
+mobile/ios/
+
+# Сборка Gradle
+.gradle/
+*.apk
+*.aab
+!signing/release.jks
+
+# ОС и редакторы
+.DS_Store
+.idea/
+.vscode/
+*.log

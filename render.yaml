@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: mir-golfa-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: GOLF_CORS_ORIGINS
+        value: https://ndvtwww-altushka.github.io,http://localhost:8081,http://localhost:19006
+      - key: GOLF_CIS_USER_AGENT
+        value: MirGolfaBot/1.0 (+https://github.com/ndvtwww-altushka/mir-golfa)
+      - key: GOLF_ADMIN_TOKEN
+        generateValue: true

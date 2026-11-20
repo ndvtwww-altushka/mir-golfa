@@ -1,0 +1,101 @@
+[
+  {
+    "id": "rusgolf-calendar",
+    "name": "Ассоциация гольфа России — календарь соревнований",
+    "url": "https://rusgolf.ru/ru/contests/tournament-calendar",
+    "country": "Россия",
+    "source_type": "official_calendar",
+    "authority": "federation",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Первичный календарь. Ссылка сама по себе не подтверждает актуальность конкретного события."
+  },
+  {
+    "id": "rusgolf-regulations",
+    "name": "Ассоциация гольфа России — соревнования и положения",
+    "url": "https://rusgolf.ru/ru/contests/sorevnovaniya-2026",
+    "country": "Россия",
+    "source_type": "official_documents",
+    "authority": "federation",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Документы и регламенты; проверять год и редакцию документа."
+  },
+  {
+    "id": "greenfee-calendar",
+    "name": "GreenFee — календарь и анонсы",
+    "url": "https://greenfee.ru/",
+    "country": "Россия",
+    "source_type": "calendar_aggregator",
+    "authority": "aggregator",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Полезен для обнаружения клубных событий; даты и условия подтверждать у организатора."
+  },
+  {
+    "id": "forest-hills-winter-cup-regulations",
+    "name": "Положение «Зимний кубок Форест Хиллс 2026–2027»",
+    "url": "https://admin.greenfee.ru/wp-content/uploads/2026/10/polozhenie_zimnij_kubok_forest_hills_2026%E2%80%932027-3.docx",
+    "country": "Россия",
+    "source_type": "official_regulations",
+    "authority": "organizer",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Положение турнира, опубликованное через GreenFee. Автоматический сбор не включён."
+  },
+  {
+    "id": "belarus-golf-calendar",
+    "name": "Белорусская ассоциация гольфа — календарь",
+    "url": "https://ingolf.by/turniryi/kalendarnyij-plan-na-2026",
+    "country": "Беларусь",
+    "source_type": "official_calendar",
+    "authority": "federation",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Проверять, что страница относится к текущему сезону."
+  },
+  {
+    "id": "fedgolf-kz",
+    "name": "Казахстанская федерация гольфа",
+    "url": "https://fedgolf.kz/ru",
+    "country": "Казахстан",
+    "source_type": "federation_site",
+    "authority": "federation",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Не считать архивные публикации текущими событиями."
+  },
+  {
+    "id": "uzgolf-events",
+    "name": "UZGolf — события",
+    "url": "https://uzgolf.uz/en/events-en/",
+    "country": "Узбекистан",
+    "source_type": "events_archive",
+    "authority": "federation",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Для результатов и дат требуется проверка публикации организатора."
+  },
+  {
+    "id": "livescoring",
+    "name": "Livescoring.ru — история турниров",
+    "url": "https://livescoring.ru/history/",
+    "country": "Россия и СНГ",
+    "source_type": "results_aggregator",
+    "authority": "aggregator",
+    "collection_mode": "manual_review",
+    "enabled": true,
+    "notes": "Вспомогательный поиск результатов, не замена официального протокола."
+  },
+  {
+    "id": "wagr",
+    "name": "World Amateur Golf Ranking",
+    "url": "https://www.wagr.com/",
+    "country": "Международный",
+    "source_type": "ranking",
+    "authority": "ranking",
+    "collection_mode": "terms_review_required",
+    "enabled": false,
+    "notes": "Рейтинг, а не общий календарь; автоматический доступ требует отдельной проверки условий."
+  }
+]

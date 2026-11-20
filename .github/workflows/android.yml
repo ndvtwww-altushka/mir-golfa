@@ -1,0 +1,100 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'data/**'
+      - 'mobile/src/data/**'
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Сборка APK
+    runs-on: ubuntu-latest
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Android SDK
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /dev/null 2>&1 || true
+          sdkmanager --list_installed | tail -20
+
+      - name: Иконки
+        run: python3 tools/make_icon.py
+
+      - name: Зависимости
+        working-directory: mobile
+        run: npm ci --no-audit --no-fund
+
+      - name: Проверка версий Expo
+        working-directory: mobile
+        run: npx expo install --fix
+
+      - name: Нативный проект
+        working-directory: mobile
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: Gradle release
+        working-directory: mobile/android
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Подпись
+        run: |
+          set -e
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          APK="mobile/android/app/build/outputs/apk/release/app-release.apk"
+          ls -la "$APK"
+          "$BT/zipalign" -f -p 4 "$APK" mir-golfa-unsigned.apk
+          "$BT/apksigner" sign \
+            --ks signing/release.jks \
+            --ks-pass pass:mirgolfa \
+            --ks-key-alias mirgolfa \
+            --key-pass pass:mirgolfa \
+            --out mir-golfa.apk mir-golfa-unsigned.apk
+          "$BT/apksigner" verify --print-certs mir-golfa.apk
+          ls -la mir-golfa.apk
+
+      - name: Артефакт
+        uses: actions/upload-artifact@v4
+        with:
+          name: mir-golfa-apk
+          path: mir-golfa.apk
+          retention-days: 30
+
+      - name: Релиз
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: Мир Гольфа — последняя сборка
+          body: |
+            Скачайте `mir-golfa.apk` и установите на Android.
+            Сборка ${{ github.run_number }} от ${{ github.event.repository.updated_at }}.
+          files: mir-golfa.apk
+          make_latest: true
